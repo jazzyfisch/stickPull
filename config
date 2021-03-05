@@ -1,0 +1,10 @@
+[ENCLOSURE]
+ID = 4
+
+[PIN_BUTTON]
+L1 = 12
+L2 = 20
+R1 = 21
+R2 = 16
+
+[MOTOR]

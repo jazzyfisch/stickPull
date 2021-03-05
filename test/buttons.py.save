@@ -1,14 +1,17 @@
 import RPi.GPIO as GPIO
 import configparser
+import os
+
+CONFIG_DIR = "Documents/stickPull/"
+CONFIG_FILENAME = "config"
 
 config = configparser.ConfigParser()
-config.read("Documents/stickPull/config")
-
+config.read(CONFIG_DIR+CONFIG_FILENAME)
 # PINS
-button_L2 = int(config['PIN_BUTTON']['L2']) # 13 # config.buttons["button_R1"] L2
-button_L1 = int(config['PIN_BUTTON']['L1']) # 6 # L1
-button_R1 = int(config['PIN_BUTTON']['R1']) # 11 # R1
-button_R2 = int(config['PIN_BUTTON']['R2']) # 5 #R2
+button_L2 = config['PIN_BUTTON']["L2"]# 13 # config.buttons["button_R1"] L2
+button_L1  config['PIN_BUTTON']['L1'] #6 # L1
+button_R1 =  # R1
+button_R2 = 5 #R2
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(button_R1, GPIO.IN, pull_up_down = GPIO.PUD_UP)
