@@ -11,12 +11,15 @@ import configparser
 
 filename_temp =  datetime.datetime.now().strftime("%m.%d.%Y_%H:%M:%S") + '_Enclosure2_study_logfile.log' 
 log_path_temp = 'logfiles/'
+Enclosre_nr = config['ENCLOSURE']['ID']
+dest_log_path = '/mnt/piwebcam/Log files stick pulling/Enclosure'+Enclosre_nr+'/study/' + filename_temp
+
 logging.basicConfig(filename = log_path_temp+filename_temp,format='%(asctime)s %(message)s', level = logging.INFO)
 
 logging.info('*********** PROGRAM START **********')
 
 config = configparser.ConfigParser()
-config.read('config')
+config.read('/home/pi/Documents/stickPull/config')
 pwm = Adafruit_PCA9685.PCA9685()
 pwm.set_pwm_freq(50)
 
@@ -45,9 +48,6 @@ sideJustPulled = False
 ex_time = 0
 timestamp_pulls_L = []
 timestamp_pulls_R = []
-dest_log_path = '/mnt/piwebcam/Log files stick pulling/Enclosure2/study/' + filename_temp
-actionfile = '/mnt/piwebcam/Log files stick pulling/Enclosure2/study/'+str(datetime.datetime.now().date())+'_Enclosure2_study_actionfile.csv'
-enclosure_n = 2
 
 closed_L = int(config['MotorPositions']['closed_L'])
 open_L_free = int(config['MotorPositions']['open_L_free'])

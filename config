@@ -7,4 +7,35 @@ L2 = 20
 R1 = 21
 R2 = 16
 
-[MOTOR]
+[IDMOTOR]
+ID_L = 13
+ID_R = 15
+ID_oat_R = 14
+ID_oat_L = 1
+
+[PIN_BRUSH]
+DIR_L = 
+PUL_L = 
+ENA_L = 
+DIR_R = 
+PUL_R = 
+ENA_R = 
+
+[MOTORPOS]
+closed_L = 420
+open_L = 300
+feed_L_back = 420
+feed_L_front = 300
+free_L = 270
+
+closed_R = 120 
+open_R = 230
+feed_R_back = 120
+feed_R_front = 230
+free_R = 230
+
+oat_close_R = 450
+oat_open_R = 240
+
+oat_open_L = 300
+oat_close_L = 450
