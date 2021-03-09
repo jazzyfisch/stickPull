@@ -1,0 +1,119 @@
+2021-03-08 18:57:17,008 *********** PROGRAM START **********
+2021-03-08 18:57:17,097 move motor 13 to : 420
+2021-03-08 18:57:18,104 move motor 15 to : 120
+2021-03-08 18:57:19,111 move motor 14 to : 240
+2021-03-08 18:57:20,388 move motor 14 to : 450
+2021-03-08 18:57:21,403 release oat on right side 
+2021-03-08 18:57:21,407 move motor 1 to : 300
+2021-03-08 18:57:22,685 move motor 1 to : 450
+2021-03-08 18:57:23,692 release oat on left side 
+2021-03-08 18:57:23,696 move motor 13 to : 300
+2021-03-08 18:57:24,704 move motor 15 to : 230
+2021-03-08 18:57:25,711 move motor 13 to : 270
+2021-03-08 18:57:27,647 move motor 13 to : 420
+2021-03-08 18:57:28,651 rat pulled on left side 
+2021-03-08 18:57:28,658 R2 was pressed 
+2021-03-08 18:57:28,659 R2 was pressed 
+2021-03-08 18:57:28,659 L1 was pressed 
+2021-03-08 18:57:28,660 move motor 13 to : 0
+2021-03-08 18:57:29,665 rat ate
+2021-03-08 18:57:29,669 move motor 13 to : 0
+2021-03-08 18:57:30,673 try pull motor back on right 
+2021-03-08 18:57:30,677 move motor 15 to : 230
+2021-03-08 18:57:31,684 move motor 15 to : 120
+2021-03-08 18:57:32,062 R1 was pressed 
+2021-03-08 18:57:32,692 move motor 15 to : 0
+2021-03-08 18:57:33,699 move motor 14 to : 240
+2021-03-08 18:57:34,978 move motor 14 to : 450
+2021-03-08 18:57:35,985 release oat on right side 
+2021-03-08 18:57:35,986 release oat on right side 
+2021-03-08 18:57:35,990 move motor 13 to : 300
+2021-03-08 18:57:36,997 move motor 15 to : 230
+2021-03-08 18:57:38,004 move motor 13 to : 270
+2021-03-08 18:57:39,123 move motor 15 to : 120
+2021-03-08 18:57:40,127 rat pulled on right side 
+2021-03-08 18:57:40,127 L2 was pressed 
+2021-03-08 18:57:40,127 L2 was pressed 
+2021-03-08 18:57:40,128 R1 was pressed 
+2021-03-08 18:57:40,130 move motor 15 to : 0
+2021-03-08 18:57:41,135 rat ate
+2021-03-08 18:57:41,138 move motor 15 to : 0
+2021-03-08 18:57:42,148 move motor 13 to : 300
+2021-03-08 18:57:43,155 move motor 13 to : 420
+2021-03-08 18:57:43,451 R1 was pressed 
+2021-03-08 18:57:43,452 L1 was pressed 
+2021-03-08 18:57:44,160 try pull motor back on left 
+2021-03-08 18:57:44,164 move motor 13 to : 0
+2021-03-08 18:57:45,171 move motor 1 to : 300
+2021-03-08 18:57:46,447 move motor 1 to : 450
+2021-03-08 18:57:47,454 release oat on left side 
+2021-03-08 18:57:47,455 release oat on left side 
+2021-03-08 18:57:47,458 move motor 13 to : 300
+2021-03-08 18:57:47,722 L1 was pressed 
+2021-03-08 18:57:48,465 move motor 15 to : 230
+2021-03-08 18:57:49,473 move motor 13 to : 270
+2021-03-08 18:57:49,889 move motor 13 to : 420
+2021-03-08 18:57:50,892 rat pulled on left side 
+2021-03-08 18:57:50,893 R2 was pressed 
+2021-03-08 18:57:50,894 R2 was pressed 
+2021-03-08 18:57:50,894 L1 was pressed 
+2021-03-08 18:57:50,896 move motor 13 to : 0
+2021-03-08 18:57:51,901 rat ate
+2021-03-08 18:57:51,905 move motor 13 to : 0
+2021-03-08 18:57:52,910 try pull motor back on right 
+2021-03-08 18:57:52,914 move motor 15 to : 230
+2021-03-08 18:57:53,922 move motor 15 to : 120
+2021-03-08 18:57:54,285 R1 was pressed 
+2021-03-08 18:57:54,287 L1 was pressed 
+2021-03-08 18:57:54,929 move motor 15 to : 0
+2021-03-08 18:57:55,937 move motor 14 to : 240
+2021-03-08 18:57:57,215 move motor 14 to : 450
+2021-03-08 18:57:58,222 release oat on right side 
+2021-03-08 18:57:58,223 release oat on right side 
+2021-03-08 18:57:58,227 move motor 13 to : 300
+2021-03-08 18:57:59,234 move motor 15 to : 230
+2021-03-08 18:57:59,407 R1 was pressed 
+2021-03-08 18:58:00,241 move motor 13 to : 270
+2021-03-08 18:58:01,850 move motor 15 to : 120
+2021-03-08 18:58:02,856 rat pulled on right side 
+2021-03-08 18:58:02,861 L2 was pressed 
+2021-03-08 18:58:02,862 L2 was pressed 
+2021-03-08 18:58:02,862 R1 was pressed 
+2021-03-08 18:58:02,863 move motor 15 to : 0
+2021-03-08 18:58:03,868 rat ate
+2021-03-08 18:58:03,871 move motor 15 to : 0
+2021-03-08 18:58:04,879 move motor 13 to : 300
+2021-03-08 18:58:05,886 move motor 13 to : 420
+2021-03-08 18:58:06,179 L1 was pressed 
+2021-03-08 18:58:06,181 R1 was pressed 
+2021-03-08 18:58:06,891 try pull motor back on left 
+2021-03-08 18:58:06,895 move motor 13 to : 0
+2021-03-08 18:58:07,902 move motor 1 to : 300
+2021-03-08 18:58:09,178 move motor 1 to : 450
+2021-03-08 18:58:10,185 release oat on left side 
+2021-03-08 18:58:10,186 release oat on left side 
+2021-03-08 18:58:10,189 move motor 13 to : 300
+2021-03-08 18:58:11,196 move motor 15 to : 230
+2021-03-08 18:58:12,203 move motor 13 to : 270
+2021-03-08 18:58:13,048 move motor 13 to : 420
+2021-03-08 18:58:14,051 rat pulled on left side 
+2021-03-08 18:58:14,053 R2 was pressed 
+2021-03-08 18:58:14,053 R2 was pressed 
+2021-03-08 18:58:14,054 L1 was pressed 
+2021-03-08 18:58:14,055 move motor 13 to : 0
+2021-03-08 18:58:15,060 rat ate
+2021-03-08 18:58:15,063 move motor 13 to : 0
+2021-03-08 18:58:16,068 try pull motor back on right 
+2021-03-08 18:58:16,072 move motor 15 to : 230
+2021-03-08 18:58:17,079 move motor 15 to : 120
+2021-03-08 18:58:17,444 R1 was pressed 
+2021-03-08 18:58:17,445 L1 was pressed 
+2021-03-08 18:58:18,086 move motor 15 to : 0
+2021-03-08 18:58:19,094 move motor 14 to : 240
+2021-03-08 18:58:20,372 move motor 14 to : 450
+2021-03-08 18:58:21,379 release oat on right side 
+2021-03-08 18:58:21,380 release oat on right side 
+2021-03-08 18:58:21,383 move motor 13 to : 300
+2021-03-08 18:58:22,390 move motor 15 to : 230
+2021-03-08 18:58:22,637 R1 was pressed 
+2021-03-08 18:58:23,397 move motor 13 to : 270

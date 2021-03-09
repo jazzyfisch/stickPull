@@ -9,6 +9,9 @@ import logging
 from shutil import copyfile
 import configparser
 
+config = configparser.ConfigParser()
+config.read('/home/pi/Documents/stickPull/config')
+
 filename_temp =  datetime.datetime.now().strftime("%m.%d.%Y_%H:%M:%S") + '_Enclosure2_study_logfile.log' 
 log_path_temp = 'logfiles/'
 Enclosre_nr = config['ENCLOSURE']['ID']
@@ -18,21 +21,20 @@ logging.basicConfig(filename = log_path_temp+filename_temp,format='%(asctime)s %
 
 logging.info('*********** PROGRAM START **********')
 
-config = configparser.ConfigParser()
-config.read('/home/pi/Documents/stickPull/config')
+
 pwm = Adafruit_PCA9685.PCA9685()
 pwm.set_pwm_freq(50)
 
-DIR_R = int(config['PinsBrush']['DIR_R'])
-PUL_R = int(config['PinsBrush']['PUL_R'])
-DIR_L = int(config['PinsBrush']['DIR_L'])
-PUL_L = int(config['PinsBrush']['PUL_L'])
-ENA_L = int(config['PinsBrush']['ENA_L'])
-ENA_R = int(config['PinsBrush']['ENA_R'])
-ID_L = int(config['IDMotors']['ID_L'])
-ID_R = int(config['IDMotors']['ID_R'])
-ID_oat_R = int(config['IDMotors']['ID_oat_R'])
-ID_oat_L = int(config['IDMotors']['ID_oat_L'])
+DIR_R = int(config['PIN_BRUSH']['DIR_R'])
+PUL_R = int(config['PIN_BRUSH']['PUL_R'])
+DIR_L = int(config['PIN_BRUSH']['DIR_L'])
+PUL_L = int(config['PIN_BRUSH']['PUL_L'])
+ENA_L = int(config['PIN_BRUSH']['ENA_L'])
+ENA_R = int(config['PIN_BRUSH']['ENA_R'])
+ID_L = int(config['IDMOTOR']['ID_L'])
+ID_R = int(config['IDMOTOR']['ID_R'])
+ID_oat_R = int(config['IDMOTOR']['ID_oat_R'])
+ID_oat_L = int(config['IDMOTOR']['ID_oat_L'])
 
 runningMode = ''
 feedingside = ''
@@ -49,21 +51,31 @@ ex_time = 0
 timestamp_pulls_L = []
 timestamp_pulls_R = []
 
-closed_L = int(config['MotorPositions']['closed_L'])
-open_L_free = int(config['MotorPositions']['open_L_free'])
-closed_R = int(config['MotorPositions']['closed_R'])
-open_L = int(config['MotorPositions']['open_L'])
-open_R = int(config['MotorPositions']['open_R'])
-feed_L_back = int(config['MotorPositions']['feed_L_back'])
-feed_L_front = int(config['MotorPositions']['feed_L_front'])
-feed_R_back = int(config['MotorPositions']['feed_R_back'])
-feed_R_front = int(config['MotorPositions']['feed_R_front'])
-oat_open_L = int(config['MotorPositions']['oat_open_L'])
-oat_open_R = int(config['MotorPositions']['oat_open_R'])
-oat_close_L = int(config['MotorPositions']['oat_close_L'])
-oat_close_R  = int(config['MotorPositions']['oat_close_R'])
+closed_L = int(config['MOTORPOS']['closed_L'])
+open_L_free = int(config['MOTORPOS']['free_L'])
+open_R_free = int(config['MOTORPOS']['free_R'])
+closed_R = int(config['MOTORPOS']['closed_R'])
+open_L = int(config['MOTORPOS']['open_L'])
+open_R = int(config['MOTORPOS']['open_R'])
+feed_L_back = int(config['MOTORPOS']['feed_L_back'])
+feed_L_front = int(config['MOTORPOS']['feed_L_front'])
+feed_R_back = int(config['MOTORPOS']['feed_R_back'])
+feed_R_front = int(config['MOTORPOS']['feed_R_front'])
+oat_open_L = int(config['MOTORPOS']['oat_open_L'])
+oat_open_R = int(config['MOTORPOS']['oat_open_R'])
+oat_close_L = int(config['MOTORPOS']['oat_close_L'])
+oat_close_R  = int(config['MOTORPOS']['oat_close_R'])
 
+
+##### SETUP PINS #####
 GPIO.setmode(GPIO.BCM)
+GPIO.setup(DIR_R, GPIO.OUT)
+GPIO.setup(PUL_R, GPIO.OUT)
+GPIO.setup(ENA_R, GPIO.OUT)
+
+GPIO.setup(DIR_L, GPIO.OUT)
+GPIO.setup(PUL_L, GPIO.OUT)
+GPIO.setup(ENA_L, GPIO.OUT)
 
 #### MOTOR FUNCTIONS ####
 
@@ -74,26 +86,20 @@ def move_mot(nr, targetPos):
     time.sleep(1)
     pwm.set_pwm(int(nr),0, int(0))
     
-def turn_brush(DIR, PUL, b_side, st_dl = 0.00005):
-    GPIO.setup(DIR, GPIO.OUT)
-    GPIO.setup(PUL, GPIO.OUT)
+def turn_brush(DIR, PUL, b_side, st_dl = 0.000005):
     GPIO.output(DIR, b_side)
     GPIO.output(PUL, False)
-    for i in range(7500):
+    for i in range(1530):
 	GPIO.output(PUL, True)
 	time.sleep(st_dl)
 	GPIO.output(PUL, False)
 	time.sleep(st_dl)
-    GPIO.cleanup(DIR)
-    GPIO.cleanup(PUL)
 
 def move_brush(DIR, PUL, ENA):
-    GPIO.setup(ENA, GPIO.OUT)
-    GPIO.setup(ENA, True)
+    GPIO.output(ENA, True)
     # turn_brush(DIR, PUL, True)
     turn_brush(DIR, PUL, False)
-    GPIO.setup(ENA, False)
-    GPIO.cleanup(ENA)
+    GPIO.output(ENA, False)
 
 def release_oat(side = ''):
     if (side == 'R')| (side==''):
@@ -124,10 +130,10 @@ move_mot(ID_L, open_L)
 move_mot(ID_R, open_R)
 move_mot(ID_L, open_L_free)
 #***** BUTTONS *****
-button_R2 = int(config['PinsButton']['button_R2']) # config.buttons["button_R1"] L2
-button_R1 = int(config['PinsButton']['button_R1'])
-button_L1 = int(config['PinsButton']['button_L1'])
-button_L2 = int(config['PinsButton']['button_L2'])
+button_R2 = int(config['PIN_BUTTON']['R2']) # config.buttons["button_R1"] L2
+button_R1 = int(config['PIN_BUTTON']['R1'])
+button_L1 = int(config['PIN_BUTTON']['L1'])
+button_L2 = int(config['PIN_BUTTON']['L2'])
 
 rat_start_time = 0
 
@@ -319,6 +325,7 @@ run_prg = True
 prg_start_time = datetime.datetime.now()
 while (datetime.datetime.now()- prg_start_time).total_seconds()< (ex_time*60):
     smloop()
+GPIO.cleanup()
 
 move_mot(ID_R, closed_R)
 move_mot(ID_L, closed_L)
