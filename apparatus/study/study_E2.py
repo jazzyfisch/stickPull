@@ -12,15 +12,14 @@ import configparser
 config = configparser.ConfigParser()
 config.read('/home/pi/Documents/stickPull/config')
 
-filename_temp =  datetime.datetime.now().strftime("%m.%d.%Y_%H:%M:%S") + '_Enclosure2_study_logfile.log' 
-log_path_temp = 'logfiles/'
-Enclosre_nr = config['ENCLOSURE']['ID']
-dest_log_path = '/mnt/piwebcam/Log files stick pulling/Enclosure'+Enclosre_nr+'/study/' + filename_temp
+Enclosure_nr = config['ENCLOSURE']['ID']
+filename_temp =  datetime.datetime.now().strftime("%m.%d.%Y_%H:%M:%S") + '_Enclosure'+Enclosure_nr+'_study_logfile.log' 
+log_path_temp = '/home/pi/Documents/stickPull/apparatus/study/logfiles/'
+dest_log_path = '/mnt/piwebcam/Log files stick pulling/Enclosure'+Enclosure_nr+'/study/' + filename_temp
 
 logging.basicConfig(filename = log_path_temp+filename_temp,format='%(asctime)s %(message)s', level = logging.INFO)
 
 logging.info('*********** PROGRAM START **********')
-
 
 pwm = Adafruit_PCA9685.PCA9685()
 pwm.set_pwm_freq(50)
@@ -38,6 +37,8 @@ ID_oat_L = int(config['IDMOTOR']['ID_oat_L'])
 
 runningMode = ''
 feedingside = ''
+R = 'R'
+L = 'L'
 
 rat_start_time = 0
 ratAte = False
@@ -65,7 +66,8 @@ oat_open_L = int(config['MOTORPOS']['oat_open_L'])
 oat_open_R = int(config['MOTORPOS']['oat_open_R'])
 oat_close_L = int(config['MOTORPOS']['oat_close_L'])
 oat_close_R  = int(config['MOTORPOS']['oat_close_R'])
-
+free_L = int(config['MOTORPOS']['free_L'])
+free_R = int(config['MOTORPOS']['free_R'])
 
 ##### SETUP PINS #####
 GPIO.setmode(GPIO.BCM)
@@ -83,8 +85,17 @@ def move_mot(nr, targetPos):
     pwm.set_pwm(int(nr),0, int(targetPos))
     print("move motor " + str(nr)+ " to : "+ str(targetPos))
     logging.info("move motor " + str(nr)+ " to : "+ str(targetPos))
-    time.sleep(1)
+    time.sleep(0.5)
     pwm.set_pwm(int(nr),0, int(0))
+
+def slomo(ID, curr_pos, target):
+	diff = target-curr_pos
+	deltad = diff/50.0
+	for i in range(0,51):
+		pwm.set_pwm(int(ID),0, int(int(curr_pos)+i*float(deltad)))
+		time.sleep(0.02)
+	logging.info("move motor " + str(ID)+ " in slomo from:" +str(curr_pos) +"to : "+ str(target))
+	pwm.set_pwm(int(ID),0,0)
     
 def turn_brush(DIR, PUL, b_side, st_dl = 0.000005):
     GPIO.output(DIR, b_side)
@@ -102,14 +113,14 @@ def move_brush(DIR, PUL, ENA):
     GPIO.output(ENA, False)
 
 def release_oat(side = ''):
-    if (side == 'R')| (side==''):
+    if (side == R)| (side==''):
 	move_mot(ID_oat_R, oat_open_R)
 	move_brush(DIR_R, PUL_R, ENA_R)
 	move_mot(ID_oat_R, oat_close_R)
 	pwm.set_pwm(ID_oat_R,0,0)
     	print("release oat on right side from close: "+ str(oat_close_R) +" to open:"+ str(oat_open_R))
     	logging.info('release oat on right side ')
-    if (side == 'L') | (side==''):
+    if (side == L) | (side==''):
 	move_mot(ID_oat_L, oat_open_L)
 	move_brush(DIR_L, PUL_L, ENA_L)
 	move_mot(ID_oat_L, oat_close_L)
@@ -117,18 +128,23 @@ def release_oat(side = ''):
     	print("release oat on right side from close: "+ str(oat_close_L) +" to open:"+ str(oat_open_L))
     	logging.info('release oat on left side ')
 
+def open_Platforms():
+    move_mot(ID_L, feed_L_front)
+    slomo(ID_L, feed_L_front, free_L)
+    move_mot(ID_R, feed_R_front)
+    slomo(ID_R, feed_R_front, free_R)
+	
 
 print("close both motors")
 move_mot(ID_L, closed_L)
 move_mot(ID_R, closed_R)
-release_oat('R')
-release_oat('L')
+release_oat(R)
+release_oat(L)
 sideJustPulled = False
 rightSide = False
 leftSide = False
-move_mot(ID_L, open_L)
-move_mot(ID_R, open_R)
-move_mot(ID_L, open_L_free)
+open_Platforms()
+
 #***** BUTTONS *****
 button_R2 = int(config['PIN_BUTTON']['R2']) # config.buttons["button_R1"] L2
 button_R1 = int(config['PIN_BUTTON']['R1'])
@@ -193,7 +209,6 @@ def callback_L2(self):
     L2 = True
     logging.info('L2 was pressed ')
     print("L2 was pressed")
-    
 
 
 GPIO.setup(button_R1, GPIO.IN, pull_up_down = GPIO.PUD_UP)
@@ -217,14 +232,7 @@ b_start = True # start the program
 
 rat_is_eating = False
 update_rat_start_time = False
-'''
-if not(GPIO.input(button_R1)):
-		print("button R1 is pressed")
-	if not(GPIO.input(button_L1)):
-		print("button L1 is pressed")
-'''
-
-    
+   
 
 pull_back_timer = datetime.datetime.now()
 def rat_eats():
@@ -317,31 +325,23 @@ def smloop():
 	    leftSide = False
 	    sideJustPulled = False
 	    ratAte = False
-	    move_mot(ID_L,  open_L)
-	    move_mot(ID_R,  open_R)
-	    move_mot(ID_L, open_L_free)
+	    open_Platforms()
+	    
 
 run_prg = True
 prg_start_time = datetime.datetime.now()
 while (datetime.datetime.now()- prg_start_time).total_seconds()< (ex_time*60):
     smloop()
-GPIO.cleanup()
+
 
 move_mot(ID_R, closed_R)
 move_mot(ID_L, closed_L)
-move_mot(ID_R, closed_R)
-move_mot(ID_L, closed_L)
-move_mot(ID_R, closed_R)
-move_mot(ID_L, closed_L)
-'''
-while not(GPIO.input(button_R1)) and not(GPIO.input(button_L1)):
-    move_mot(ID_R, open_R)
-    move_mot(ID_L, open_L)
-    move_mot(ID_R,  closed_R)
-    move_mot(ID_L,  closed_L)
-move_mot(ID_R, 0)
-move_mot(ID_L, 0)
-'''
+while GPIO.input(button_R1) and GPIO.input(button_L1):
+    move_mot(ID_R, closed_R)
+    move_mot(ID_L, closed_L)
+
+GPIO.cleanup()
+
 print('total pulls on right side: '+str(len(timestamp_pulls_L)) + ' total pulls on left side: '+ str(len(timestamp_pulls_R)))
 logging.info('total pulls on right side: '+str(len(timestamp_pulls_L)) + ' total pulls on left side: '+ str(len(timestamp_pulls_R)))
 print('timestamp pulls on right side:')
