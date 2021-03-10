@@ -28,23 +28,25 @@ pwm.set_pwm_freq(50)
 GPIO.setmode(GPIO.BCM)
 
 class Brush:
-    def __init__(self, ENA, PUL, DIR, side):
+    def __init__(self, ENA, PUL, DIR, side, st_dl, range_br):
 	self.ENA = ENA
 	self.DIR = DIR
 	self.PUL = PUL
 	self.side = side
+	self.st_dl = float(st_dl)
+	self.range_br = int(range_br)
 	GPIO.setup(DIR, GPIO.OUT)
 	GPIO.setup(PUL, GPIO.OUT)
 	GPIO.setup(ENA, GPIO.OUT)
 
-    def turn_brush(self, b_side, st_dl = 0.000005):
+    def turn_brush(self, b_side):
 	GPIO.output(self.DIR, b_side)
 	GPIO.output(self.PUL, False)
-	for i in range(1530):
+	for i in range(self.range_br):
 	    GPIO.output(self.PUL, True)
-	    time.sleep(st_dl)
+	    time.sleep(self.st_dl)
 	    GPIO.output(self.PUL, False)
-	    time.sleep(st_dl)
+	    time.sleep(self.st_dl)
 
     def move_brush(self):
 	GPIO.output(self.ENA, True)
@@ -58,8 +60,8 @@ L = 'L'
 def namestr(obj, namespace):
     return [name for name in namespace if namespace[name] is obj]
 
-brush_R = Brush(int(config['PIN_BRUSH']['ENA_R']), int(config['PIN_BRUSH']['PUL_R']), int(config['PIN_BRUSH']['DIR_R']), R)
-brush_L = Brush(int(config['PIN_BRUSH']['ENA_L']), int(config['PIN_BRUSH']['PUL_L']), int(config['PIN_BRUSH']['DIR_L']), L)
+brush_R = Brush(int(config['PIN_BRUSH']['ENA_R']), int(config['PIN_BRUSH']['PUL_R']), int(config['PIN_BRUSH']['DIR_R']), R, float(config['BRUSH']['st_dl']), int(config['BRUSH']['range_br']))
+brush_L = Brush(int(config['PIN_BRUSH']['ENA_L']), int(config['PIN_BRUSH']['PUL_L']), int(config['PIN_BRUSH']['DIR_L']), L, float(config['BRUSH']['st_dl']), int(config['BRUSH']['range_br']))
 
 ID_L = int(config['IDMOTOR']['ID_L'])
 ID_R = int(config['IDMOTOR']['ID_R'])
@@ -70,14 +72,10 @@ runningMode = ''
 feedingside = ''
 
 
+global R1, R2, L1, L2, open_platform, sideJustPulled, rightSide, leftSide
+open_platform = True
 rat_start_time = 0
 ratAte = False
-b_changeMode = False
-leftSide = False
-rightSide = False
-prg_start = 0
-b_start = False
-sideJustPulled = False
 ex_time = 0
 timestamp_pulls_L = []
 timestamp_pulls_R = []
@@ -114,6 +112,7 @@ def slomo(ID, curr_pos, target):
 	diff = target-curr_pos
 	deltad = diff/40.0
 	for i in range(0,41):
+	    if (open_platform):
 		pwm.set_pwm(int(ID),0, int(int(curr_pos)+i*float(deltad)))
 		time.sleep(0.02)
 	pwm.set_pwm(int(ID),0, int(0))
@@ -144,9 +143,12 @@ move_mot(ID_L, closed_L)
 move_mot(ID_R, closed_R)
 release_oat(R)
 release_oat(L)
+
+
 sideJustPulled = False
 rightSide = False
 leftSide = False
+
 open_Platforms()
 
 #***** BUTTONS *****
@@ -166,10 +168,12 @@ except:
 ex_time = float(sys.argv[1])
 print("program will run for " + str(ex_time)+" min")
 
+
 R1 = True
 R2 = False
 L1 = True
 L2 = False
+open_platform = True
 
 def callback_R1(self):
     global R1, R2
@@ -179,7 +183,6 @@ def callback_R1(self):
     R2 = False
 
 def callback_R2(self):
-    global  sideJustPulled, rightSide, leftSide, R1, R2
     if not(sideJustPulled) and not(leftSide):
 	move_mot(ID_L, closed_L)
 	sideJustPulled = True
@@ -187,6 +190,7 @@ def callback_R2(self):
 	leftSide = False
 	logging.info('rat pulled on left side ')
         print("rat pulled on left side")
+	open_platform = false
 	timestamp_pulls_R.append(datetime.datetime.now())
     logging.info('R2 was pressed ')
     R1 = False
@@ -194,19 +198,18 @@ def callback_R2(self):
     print("R2 was pressed")
 
 def callback_L1(self):
-    global L1, L2
     logging.info('L1 was pressed ')
     print("L1 was pressed ")    
     L1 = True
     L2 = False
 
 def callback_L2(self):
-    global sideJustPulled, leftSide, L1, L2
     if not(sideJustPulled) and not(rightSide):
 	move_mot(ID_R, closed_R)
 	sideJustPulled = True
 	leftSide = True
 	logging.info('rat pulled on right side ')
+	open_platform = false
 	timestamp_pulls_L.append(datetime.datetime.now())
 	print("rat pulled on right side")
     L1 = False
@@ -231,9 +234,6 @@ GPIO.add_event_callback(button_L2, callback_L2)
 notChanged = True
 last_print = 0
 diff = 0
-needs_refill = True
-b_start = True # start the program
-
 rat_is_eating = False
 update_rat_start_time = False
    
@@ -323,6 +323,7 @@ def smloop():
 	    leftSide = False
 	    sideJustPulled = False
 	    ratAte = False
+	    open_platform = True
 	    open_Platforms()
 	    
 
