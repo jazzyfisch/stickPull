@@ -1,0 +1,6 @@
+Right side: 
+out: 4.3
+platform: 7
+bei 255
+
+Left side: 

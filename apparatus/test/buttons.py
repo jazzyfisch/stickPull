@@ -22,7 +22,7 @@ GPIO.add_event_detect(button_L2, GPIO.FALLING, bouncetime=300)
     
     
 while True:
-    if not(GPIO.input(button_R1)):
+    '''    if not(GPIO.input(button_R1)):
         print("button R1 is pressed")
     if not(GPIO.input(button_L1)):
         print("button L1 is pressed")
@@ -39,4 +39,3 @@ while True:
         print("button R2")
     if GPIO.event_detected(button_L2):
         print("button L2")
-        '''
