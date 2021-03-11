@@ -4,7 +4,7 @@ import configparser
 import time
 
 config = configparser.ConfigParser()
-config.read('/home/pi/Documents/stickPull/config')
+config.read('/home/pi/Documents/stickPull/config.conf')
 GPIO.setmode(GPIO.BCM)
 DIR_R = int(config['PIN_BRUSH']['DIR_R'])
 PUL_R = int(config['PIN_BRUSH']['PUL_R'])

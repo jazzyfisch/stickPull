@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import configparser
 
 config = configparser.ConfigParser()
-config.read('/home/pi/Documents/stickPull/config')
+config.read('/home/pi/Documents/stickPull/config.conf')
 print (config['PIN_BUTTON'])
 # PINS
 button_L2 = int(config['PIN_BUTTON']['L2']) # 13 # config.buttons["button_R1"] L2
