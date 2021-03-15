@@ -178,15 +178,16 @@ def callback_R1(self):
     R2 = False
 
 def callback_R2(self):
-    global sideJustPulled, rightSide, leftSide, R1, R2
+    global sideJustPulled, rightSide, leftSide, R1, R2, open_platform
     if not(sideJustPulled) and not(leftSide):
 	move_mot(ID_L, closed_L)
 	sideJustPulled = True
 	rightSide = True
 	leftSide = False
 	logging.info('rat pulled on left side ')
+	logging.info('R2 was pressed ')
         print("rat pulled on left side")
-	open_platform = false
+	open_platform = False
 	timestamp_pulls_R.append(datetime.datetime.now())
     logging.info('R2 was pressed ')
     R1 = False
@@ -201,13 +202,14 @@ def callback_L1(self):
     L2 = False
 
 def callback_L2(self):
-    global sideJustPulled, rightSide, leftSide, L1, L2
+    global sideJustPulled, rightSide, leftSide, L1, L2, open_platform
     if not(sideJustPulled) and not(rightSide):
 	move_mot(ID_R, closed_R)
 	sideJustPulled = True
 	leftSide = True
 	logging.info('rat pulled on right side ')
-	open_platform = false
+	logging.info('L2 was pressed ')
+	open_platform = False
 	timestamp_pulls_L.append(datetime.datetime.now())
 	print("rat pulled on right side")
     L1 = False
@@ -220,22 +222,19 @@ button_R1 = int(config['PIN_BUTTON']['R1'])
 button_L1 = int(config['PIN_BUTTON']['L1'])
 button_L2 = int(config['PIN_BUTTON']['L2'])
 
-def setup_buttons():
-	#***** BUTTONS *****
-    GPIO.setup(button_R1, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-    GPIO.setup(button_R2, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-    GPIO.setup(button_L1, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-    GPIO.setup(button_L2, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-    GPIO.add_event_detect(button_R1, GPIO.FALLING, bouncetime=300)
-    GPIO.add_event_callback(button_R1, callback_R1)
-    GPIO.add_event_detect(button_R2, GPIO.FALLING, bouncetime=300)
-    GPIO.add_event_callback(button_R2, callback_R2)
-    GPIO.add_event_detect(button_L1, GPIO.FALLING, bouncetime=300)
-    GPIO.add_event_callback(button_L1, callback_L1)
-    GPIO.add_event_detect(button_L2, GPIO.FALLING, bouncetime=300)
-    GPIO.add_event_callback(button_L2, callback_L2)
-
-setup_buttons()
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(button_R1, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+GPIO.setup(button_R2, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+GPIO.setup(button_L1, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+GPIO.setup(button_L2, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+GPIO.add_event_detect(button_R1, GPIO.FALLING, bouncetime=300)
+GPIO.add_event_callback(button_R1, callback_R1)
+GPIO.add_event_detect(button_R2, GPIO.FALLING, bouncetime=300)
+GPIO.add_event_callback(button_R2, callback_R2)
+GPIO.add_event_detect(button_L1, GPIO.FALLING, bouncetime=300)
+GPIO.add_event_callback(button_L1, callback_L1)
+GPIO.add_event_detect(button_L2, GPIO.FALLING, bouncetime=300)
+GPIO.add_event_callback(button_L2, callback_L2)
 
 notChanged = True
 last_print = 0
@@ -314,7 +313,7 @@ def smloop():
 		    move_mot(ID_L, feed_L_front)
 		    move_mot(ID_L,  feed_L_back)
 		    logging.info('try pull motor back on left ')
-		    print('try pul motor on left side')
+		    print('try pull motor on left side')
 	elif ((rightSide and not(GPIO.input(button_R1)) ) or (leftSide and not(GPIO.input(button_L1)) ) and ratAte):
 	    print("should release oat")
 	    if rightSide:
