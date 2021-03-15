@@ -53,6 +53,7 @@ class Brush:
 	# turn_brush(DIR, PUL, True)
 	self.turn_brush(False)
 	GPIO.output(self.ENA, False)
+   
 
 R = 'R'
 L = 'L'
@@ -70,7 +71,6 @@ ID_oat_L = int(config['IDMOTOR']['ID_oat_L'])
 
 runningMode = ''
 feedingside = ''
-
 
 global R1, R2, L1, L2, open_platform, sideJustPulled, rightSide, leftSide
 open_platform = True
@@ -98,7 +98,6 @@ free_L = int(config['MOTORPOS']['free_L'])
 free_R = int(config['MOTORPOS']['free_R'])
 
 
-
 #### MOTOR FUNCTIONS ####
 
 def move_mot(nr, targetPos):
@@ -114,7 +113,7 @@ def slomo(ID, curr_pos, target):
 	for i in range(0,41):
 	    if (open_platform):
 		pwm.set_pwm(int(ID),0, int(int(curr_pos)+i*float(deltad)))
-		time.sleep(0.02)
+		time.sleep(0.01)
 	pwm.set_pwm(int(ID),0, int(0))
 	logging.info("move motor " + str(ID)+ " in slomo from:" +str(curr_pos) +"to : "+ str(target))
 
@@ -151,11 +150,7 @@ leftSide = False
 
 open_Platforms()
 
-#***** BUTTONS *****
-button_R2 = int(config['PIN_BUTTON']['R2']) # config.buttons["button_R1"] L2
-button_R1 = int(config['PIN_BUTTON']['R1'])
-button_L1 = int(config['PIN_BUTTON']['L1'])
-button_L2 = int(config['PIN_BUTTON']['L2'])
+
 
 rat_start_time = 0
 
@@ -183,6 +178,7 @@ def callback_R1(self):
     R2 = False
 
 def callback_R2(self):
+    global sideJustPulled, rightSide, leftSide, R1, R2
     if not(sideJustPulled) and not(leftSide):
 	move_mot(ID_L, closed_L)
 	sideJustPulled = True
@@ -198,12 +194,14 @@ def callback_R2(self):
     print("R2 was pressed")
 
 def callback_L1(self):
+    global L1, L2
     logging.info('L1 was pressed ')
     print("L1 was pressed ")    
     L1 = True
     L2 = False
 
 def callback_L2(self):
+    global sideJustPulled, rightSide, leftSide, L1, L2
     if not(sideJustPulled) and not(rightSide):
 	move_mot(ID_R, closed_R)
 	sideJustPulled = True
@@ -217,19 +215,27 @@ def callback_L2(self):
     logging.info('L2 was pressed ')
     print("L2 was pressed")
 
+button_R2 = int(config['PIN_BUTTON']['R2']) # config.buttons["button_R1"] L2
+button_R1 = int(config['PIN_BUTTON']['R1'])
+button_L1 = int(config['PIN_BUTTON']['L1'])
+button_L2 = int(config['PIN_BUTTON']['L2'])
 
-GPIO.setup(button_R1, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-GPIO.setup(button_R2, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-GPIO.setup(button_L1, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-GPIO.setup(button_L2, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-GPIO.add_event_detect(button_R1, GPIO.FALLING, bouncetime=300)
-GPIO.add_event_callback(button_R1, callback_R1)
-GPIO.add_event_detect(button_R2, GPIO.FALLING, bouncetime=300)
-GPIO.add_event_callback(button_R2, callback_R2)
-GPIO.add_event_detect(button_L1, GPIO.FALLING, bouncetime=300)
-GPIO.add_event_callback(button_L1, callback_L1)
-GPIO.add_event_detect(button_L2, GPIO.FALLING, bouncetime=300)
-GPIO.add_event_callback(button_L2, callback_L2)
+def setup_buttons():
+	#***** BUTTONS *****
+    GPIO.setup(button_R1, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+    GPIO.setup(button_R2, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+    GPIO.setup(button_L1, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+    GPIO.setup(button_L2, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+    GPIO.add_event_detect(button_R1, GPIO.FALLING, bouncetime=300)
+    GPIO.add_event_callback(button_R1, callback_R1)
+    GPIO.add_event_detect(button_R2, GPIO.FALLING, bouncetime=300)
+    GPIO.add_event_callback(button_R2, callback_R2)
+    GPIO.add_event_detect(button_L1, GPIO.FALLING, bouncetime=300)
+    GPIO.add_event_callback(button_L1, callback_L1)
+    GPIO.add_event_detect(button_L2, GPIO.FALLING, bouncetime=300)
+    GPIO.add_event_callback(button_L2, callback_L2)
+
+setup_buttons()
 
 notChanged = True
 last_print = 0
