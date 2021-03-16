@@ -1,0 +1,49 @@
+[ENCLOSURE]
+ID = 2
+
+[PIN_BUTTON]
+L2 = 13
+L1 = 6
+R1 = 11
+R2 = 5
+[Params]
+ex_time = 180
+slomo = False
+rat_eating_time = 2
+
+[IDMOTOR]
+ID_L = 3
+ID_R = 2
+ID_oat_R = 0
+ID_oat_L = 1
+
+[PIN_BRUSH]
+ENA_R = 10
+ENA_L = 22
+DIR_R = 15
+PUL_R = 14
+DIR_L = 23
+PUL_L = 18
+
+[BRUSH]
+st_dl = 0.00005
+range_br = 7500
+
+[MOTORPOS]
+closed_L = 530
+open_L = 210
+feed_L_back = 530
+feed_L_front = 400
+free_L = 180
+
+closed_R = 100
+open_R = 460
+free_R = 460
+feed_R_back = 100
+feed_R_front = 405
+
+oat_open_L = 200
+oat_open_R = 200
+oat_close_L = 600
+oat_close_R  = 600
+
