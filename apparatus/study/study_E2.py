@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import sys
 from sys import argv
 import datetime
@@ -96,6 +97,7 @@ oat_close_L = int(config['MOTORPOS']['oat_close_L'])
 oat_close_R  = int(config['MOTORPOS']['oat_close_R'])
 free_L = int(config['MOTORPOS']['free_L'])
 free_R = int(config['MOTORPOS']['free_R'])
+b_slomo = config['Params']['slomo']
 
 
 #### MOTOR FUNCTIONS ####
@@ -133,9 +135,15 @@ def release_oat(side = ''):
 
 def open_Platforms():
     move_mot(ID_L, feed_L_front)
-    slomo(ID_L, feed_L_front, free_L)
+    if b_slomo:
+	slomo(ID_L, feed_L_front, free_L)
+    else:
+	move_mot(ID_L, free_L)
     move_mot(ID_R, feed_R_front)
-    slomo(ID_R, feed_R_front, free_R)	
+    if b_slomo:
+	slomo(ID_R, feed_R_front, free_R)	
+    else:
+	move_mot(ID_L, free_R)
 
 print("close both motors")
 move_mot(ID_L, closed_L)
@@ -150,19 +158,21 @@ leftSide = False
 
 open_Platforms()
 
-
-
 rat_start_time = 0
 
 try:
     rat_eating_time = float(sys.argv[2])
     print("rat eating time: " + str(rat_eating_time)+ " sec")
 except:
-    print("The eating time will be 10 sec")
+    rat_eating_time = int(config['Params']['rat_eating_time'])
+    print("The eating time will be "+str(rat_eating_time)+" sec")
+try:
+    ex_time = float(sys.argv[1])
+    print("program will run for " + str(ex_time)+" min")
+except:
+    ex_time = int(config['Params']['ex_time'])
 
-ex_time = float(sys.argv[1])
 print("program will run for " + str(ex_time)+" min")
-
 
 R1 = True
 R2 = False
@@ -242,7 +252,6 @@ diff = 0
 rat_is_eating = False
 update_rat_start_time = False
    
-
 pull_back_timer = datetime.datetime.now()
 def rat_eats():
     global ratAte, update_rat_start_time, rat_start_time
@@ -304,14 +313,14 @@ def smloop():
 		    logging.info('try pull motor back on right ')
 		    print('try pull motor on right side')
 		    pull_back_timer = datetime.datetime.now()
-		    move_mot(ID_R, feed_R_front)
-		    move_mot(ID_R,  feed_R_back)
+		    move_mot(ID_R, open_R)
+		    move_mot(ID_R,  closed_R)
 	    if leftSide:
 		print("side pulled, rat ate on left side")
 		if (datetime.datetime.now() - pull_back_timer).total_seconds() > 3:
 		    pull_back_timer = datetime.datetime.now()
-		    move_mot(ID_L, feed_L_front)
-		    move_mot(ID_L,  feed_L_back)
+		    move_mot(ID_L, open_L)
+		    move_mot(ID_L,  closed_L)
 		    logging.info('try pull motor back on left ')
 		    print('try pull motor on left side')
 	elif ((rightSide and not(GPIO.input(button_R1)) ) or (leftSide and not(GPIO.input(button_L1)) ) and ratAte):
