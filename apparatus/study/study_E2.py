@@ -97,8 +97,17 @@ oat_close_L = int(config['MOTORPOS']['oat_close_L'])
 oat_close_R  = int(config['MOTORPOS']['oat_close_R'])
 free_L = int(config['MOTORPOS']['free_L'])
 free_R = int(config['MOTORPOS']['free_R'])
-b_slomo = config['Params']['slomo']
+u_slomo = (config['Params']['slomo'])
+t_move = float(config['Params']['t_move'])
 
+if u_slomo == 'f':
+    b_slomo = False
+else:
+    b_slomo = True
+
+print('slomo')
+print(b_slomo)
+print(b_slomo==False)
 
 #### MOTOR FUNCTIONS ####
 
@@ -134,16 +143,19 @@ def release_oat(side = ''):
     	logging.info('release oat on left side ')
 
 def open_Platforms():
+    print('openplatforms')
     move_mot(ID_L, feed_L_front)
     if b_slomo:
+        print('with slomo')
 	slomo(ID_L, feed_L_front, free_L)
     else:
+        print('without slomo')
 	move_mot(ID_L, free_L)
     move_mot(ID_R, feed_R_front)
     if b_slomo:
 	slomo(ID_R, feed_R_front, free_R)	
     else:
-	move_mot(ID_L, free_R)
+	move_mot(ID_R, free_R)
 
 print("close both motors")
 move_mot(ID_L, closed_L)
@@ -370,5 +382,5 @@ for i in timestamp_pulls_R:
 print('PROGAM END')
 logging.info('*********** PROGRAM END **********')
 copyfile(log_path_temp+filename_temp, dest_log_path)
-os.remove(log_path_temp)
+os.remove(log_path_temp+filename_temp)
 

@@ -1,0 +1,46 @@
+[ENCLOSURE]
+ID = 6
+
+[PIN_BUTTON]
+L1 = 12
+L2 = 20
+R1 = 21
+R2 = 16
+
+[IDMOTOR]
+ID_L = 14
+ID_R = 12
+ID_oat_R = 13
+ID_oat_L = 15
+
+[PIN_BRUSH]
+DIR_R = 24
+PUL_R = 23 
+ENA_R = 25
+DIR_L = 6
+PUL_L = 13
+ENA_L = 5
+
+[BRUSH]
+st_dl = 0.000005
+range_br = 1530
+
+[MOTORPOS]
+closed_L = 350
+open_L = 230
+feed_L_back = 260
+feed_L_front = 230
+free_L = 200
+
+closed_R =  180
+open_R = 320
+feed_R_back = 180 
+feed_R_front = 320
+free_R = 350
+
+oat_close_R = 450
+oat_open_R = 250
+
+oat_open_L = 240
+oat_close_L = 420
+
