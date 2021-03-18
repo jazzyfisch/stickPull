@@ -97,17 +97,8 @@ oat_close_L = int(config['MOTORPOS']['oat_close_L'])
 oat_close_R  = int(config['MOTORPOS']['oat_close_R'])
 free_L = int(config['MOTORPOS']['free_L'])
 free_R = int(config['MOTORPOS']['free_R'])
-u_slomo = (config['Params']['slomo'])
+b_slomo = bool(config['Params']['slomo'])
 t_move = float(config['Params']['t_move'])
-
-if u_slomo == 'f':
-    b_slomo = False
-else:
-    b_slomo = True
-
-print('slomo')
-print(b_slomo)
-print(b_slomo==False)
 
 #### MOTOR FUNCTIONS ####
 
@@ -285,7 +276,7 @@ def rat_eats():
 lastPrint = datetime.datetime.now()
 
 def smloop():
-    global lastPrint,diff, ratAte, feedingSide, leftSide, rightSide, sideJustPulled, pull_back_timer
+    global lastPrint,diff, ratAte, feedingSide, leftSide, rightSide, sideJustPulled, pull_back_timer, open_platform
     # print("hey ")
     # lastPrint = datetime.datetime.now()
     # static variable with writer
@@ -300,8 +291,8 @@ def smloop():
     
     # if ((datetime.datetime.now()-lastPrint).total_seconds() > 3):
 	# lastPrint = datetime.datetime.now()
-    
-    print("side just pulled: "+str(sideJustPulled)+", left side: " + str(leftSide) + ", right side: "+ str(rightSide) + ", rat ate: "+ str(ratAte))
+    print('l')
+    # print("side just pulled: "+str(sideJustPulled)+", left side: " + str(leftSide) + ", right side: "+ str(rightSide) + ", rat ate: "+ str(ratAte))
     if sideJustPulled:
 	if not(ratAte):
 	    if rightSide:
