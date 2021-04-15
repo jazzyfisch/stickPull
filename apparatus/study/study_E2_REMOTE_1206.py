@@ -111,11 +111,9 @@ def slomo(ID, curr_pos, target):
 	diff = target-curr_pos
 	deltad = diff/40.0
 	for i in range(0,41):
-		if open_platform:
-			pwm.set_pwm(int(ID),0, int(int(curr_pos)+i*float(deltad)))
-			time.sleep(0.005)
-		else:
-			break
+	    if (open_platform):
+		pwm.set_pwm(int(ID),0, int(int(curr_pos)+i*float(deltad)))
+		time.sleep(0.01)
 	pwm.set_pwm(int(ID),0, int(0))
 	logging.info("move motor " + str(ID)+ " in slomo from:" +str(curr_pos) +"to : "+ str(target))
 

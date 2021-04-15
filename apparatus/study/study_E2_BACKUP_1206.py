@@ -98,6 +98,10 @@ free_R = int(config['MOTORPOS']['free_R'])
 b_slomo = bool(config['Params']['slomo'])
 t_move = float(config['Params']['t_move'])
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> 766999f4b2600975987ff49fba27084b370cb362
 #### MOTOR FUNCTIONS ####
 
 def move_mot(nr, targetPos):
@@ -286,10 +290,14 @@ def rat_eats():
 	
 lastPrint = datetime.datetime.now()
 def smloop():
+<<<<<<< HEAD
+    global lastPrint,diff, ratAte, feedingSide, leftSide, rightSide, sideJustPulled, pull_back_timer, open_platform
+=======
     global lastPrint,diff, ratAte, leftSide, rightSide, sideJustPulled, pull_back_timer, open_platform, lastAction
     if (datetime.datetime.now()- lastAction).total_seconds() > pullBackTime:
 	close_Platforms()
 	open_Platforms()
+>>>>>>> 766999f4b2600975987ff49fba27084b370cb362
     # print("hey ")
     # lastPrint = datetime.datetime.now()
     # static variable with writer

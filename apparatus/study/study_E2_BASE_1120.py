@@ -18,7 +18,7 @@ filename_temp =  datetime.datetime.now().strftime("%m.%d.%Y_%H:%M:%S") + '_Enclo
 log_path_temp = '/home/pi/Documents/stickPull/apparatus/study/logfiles/'
 dest_log_path = '/mnt/piwebcam/Log files stick pulling/Enclosure'+Enclosure_nr+'/study/' + filename_temp
 
-logging.basicConfig(filename = log_path_temp+filename_temp,format=str(Enclosure_nr)+'%(asctime)s %(message)s', level = logging.INFO)
+logging.basicConfig(filename = log_path_temp+filename_temp,format='%(asctime)s %(message)s', level = logging.INFO)
 
 logging.info('*********** PROGRAM START **********')
 
@@ -70,6 +70,8 @@ ID_R = int(config['IDMOTOR']['ID_R'])
 ID_oat_R = int(config['IDMOTOR']['ID_oat_R'])
 ID_oat_L = int(config['IDMOTOR']['ID_oat_L'])
 
+runningMode = ''
+feedingside = ''
 
 global R1, R2, L1, L2, open_platform, sideJustPulled, rightSide, leftSide
 open_platform = True
@@ -95,8 +97,17 @@ oat_close_L = int(config['MOTORPOS']['oat_close_L'])
 oat_close_R  = int(config['MOTORPOS']['oat_close_R'])
 free_L = int(config['MOTORPOS']['free_L'])
 free_R = int(config['MOTORPOS']['free_R'])
-b_slomo = bool(config['Params']['slomo'])
+u_slomo = (config['Params']['slomo'])
 t_move = float(config['Params']['t_move'])
+
+if u_slomo == 'f':
+    b_slomo = False
+else:
+    b_slomo = True
+
+print('slomo')
+print(b_slomo)
+print(b_slomo==False)
 
 #### MOTOR FUNCTIONS ####
 
@@ -111,11 +122,9 @@ def slomo(ID, curr_pos, target):
 	diff = target-curr_pos
 	deltad = diff/40.0
 	for i in range(0,41):
-		if open_platform:
-			pwm.set_pwm(int(ID),0, int(int(curr_pos)+i*float(deltad)))
-			time.sleep(0.005)
-		else:
-			break
+	    if (open_platform):
+		pwm.set_pwm(int(ID),0, int(int(curr_pos)+i*float(deltad)))
+		time.sleep(0.01)
 	pwm.set_pwm(int(ID),0, int(0))
 	logging.info("move motor " + str(ID)+ " in slomo from:" +str(curr_pos) +"to : "+ str(target))
 
@@ -148,10 +157,6 @@ def open_Platforms():
     else:
 	move_mot(ID_R, free_R)
 
-def close_Platforms():
-    move_mot(ID_R, closed_R)
-    move_mot(ID_L, closed_L)
-
 print("close both motors")
 move_mot(ID_L, closed_L)
 move_mot(ID_R, closed_R)
@@ -178,7 +183,6 @@ try:
     print("program will run for " + str(ex_time)+" min")
 except:
     ex_time = int(config['Params']['ex_time'])
-pullBackTime = int(config['Params']['pullBackTime'])
 
 print("program will run for " + str(ex_time)+" min")
 
@@ -187,20 +191,16 @@ R2 = False
 L1 = True
 L2 = False
 open_platform = True
-lastAction = datetime.datetime.now()
 
 def callback_R1(self):
-    global R1, R2, lastAction
-    lastAction = datetime.datetime.now()
+    global R1, R2
     logging.info('R1 was pressed ')
     print("R1 was pressed ")
     R1 = True
     R2 = False
 
 def callback_R2(self):
-    global sideJustPulled, rightSide, leftSide, R1, R2, open_platform, lastAction
-    lastAction = datetime.datetime.now()
-
+    global sideJustPulled, rightSide, leftSide, R1, R2, open_platform
     if not(sideJustPulled) and not(leftSide):
 	move_mot(ID_L, closed_L)
 	sideJustPulled = True
@@ -217,16 +217,14 @@ def callback_R2(self):
     print("R2 was pressed")
 
 def callback_L1(self):
-    global L1, L2, lastAction
-    lastAction = datetime.datetime.now()
+    global L1, L2
     logging.info('L1 was pressed ')
     print("L1 was pressed ")    
     L1 = True
     L2 = False
 
 def callback_L2(self):
-    global sideJustPulled, rightSide, leftSide, L1, L2, open_platform, lastAction
-    lastAction = datetime.datetime.now()
+    global sideJustPulled, rightSide, leftSide, L1, L2, open_platform
     if not(sideJustPulled) and not(rightSide):
 	move_mot(ID_R, closed_R)
 	sideJustPulled = True
@@ -285,11 +283,9 @@ def rat_eats():
 	update_rat_start_time = True
 	
 lastPrint = datetime.datetime.now()
+
 def smloop():
-    global lastPrint,diff, ratAte, leftSide, rightSide, sideJustPulled, pull_back_timer, open_platform, lastAction
-    if (datetime.datetime.now()- lastAction).total_seconds() > pullBackTime:
-	close_Platforms()
-	open_Platforms()
+    global lastPrint,diff, ratAte, feedingSide, leftSide, rightSide, sideJustPulled, pull_back_timer
     # print("hey ")
     # lastPrint = datetime.datetime.now()
     # static variable with writer
@@ -304,8 +300,8 @@ def smloop():
     
     # if ((datetime.datetime.now()-lastPrint).total_seconds() > 3):
 	# lastPrint = datetime.datetime.now()
-    print('l')
-    # print("side just pulled: "+str(sideJustPulled)+", left side: " + str(leftSide) + ", right side: "+ str(rightSide) + ", rat ate: "+ str(ratAte))
+    
+    print("side just pulled: "+str(sideJustPulled)+", left side: " + str(leftSide) + ", right side: "+ str(rightSide) + ", rat ate: "+ str(ratAte))
     if sideJustPulled:
 	if not(ratAte):
 	    if rightSide:
@@ -387,3 +383,4 @@ print('PROGAM END')
 logging.info('*********** PROGRAM END **********')
 copyfile(log_path_temp+filename_temp, dest_log_path)
 os.remove(log_path_temp+filename_temp)
+
