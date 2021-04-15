@@ -18,7 +18,7 @@ filename_temp =  datetime.datetime.now().strftime("%m.%d.%Y_%H:%M:%S") + '_Enclo
 log_path_temp = '/home/pi/Documents/stickPull/apparatus/study/logfiles/'
 dest_log_path = '/mnt/piwebcam/Log files stick pulling/Enclosure'+Enclosure_nr+'/study/' + filename_temp
 
-logging.basicConfig(filename = log_path_temp+filename_temp,format='%(asctime)s %(message)s', level = logging.INFO)
+logging.basicConfig(filename = log_path_temp+filename_temp,format='2 %(asctime)s %(message)s', level = logging.INFO)
 
 logging.info('*********** PROGRAM START **********')
 
@@ -59,9 +59,6 @@ class Brush:
 R = 'R'
 L = 'L'
 
-def namestr(obj, namespace):
-    return [name for name in namespace if namespace[name] is obj]
-
 brush_R = Brush(int(config['PIN_BRUSH']['ENA_R']), int(config['PIN_BRUSH']['PUL_R']), int(config['PIN_BRUSH']['DIR_R']), R, float(config['BRUSH']['st_dl']), int(config['BRUSH']['range_br']))
 brush_L = Brush(int(config['PIN_BRUSH']['ENA_L']), int(config['PIN_BRUSH']['PUL_L']), int(config['PIN_BRUSH']['DIR_L']), L, float(config['BRUSH']['st_dl']), int(config['BRUSH']['range_br']))
 
@@ -70,6 +67,8 @@ ID_R = int(config['IDMOTOR']['ID_R'])
 ID_oat_R = int(config['IDMOTOR']['ID_oat_R'])
 ID_oat_L = int(config['IDMOTOR']['ID_oat_L'])
 
+runningMode = ''
+feedingside = ''
 
 global R1, R2, L1, L2, open_platform, sideJustPulled, rightSide, leftSide
 open_platform = True
@@ -95,8 +94,9 @@ oat_close_L = int(config['MOTORPOS']['oat_close_L'])
 oat_close_R  = int(config['MOTORPOS']['oat_close_R'])
 free_L = int(config['MOTORPOS']['free_L'])
 free_R = int(config['MOTORPOS']['free_R'])
-b_slomo = bool(config['Params']['slomo'])
-t_move = float(config['Params']['t_move'])
+# b_slomo = config['Params']['slomo']
+b_slomo = False
+
 
 #### MOTOR FUNCTIONS ####
 
@@ -104,7 +104,7 @@ def move_mot(nr, targetPos):
     pwm.set_pwm(int(nr),0, int(targetPos))
     print("move motor " + str(nr)+ " to : "+ str(targetPos))
     logging.info("move motor " + str(nr)+ " to : "+ str(targetPos))
-    time.sleep(0.5)
+    time.sleep(1)
     pwm.set_pwm(int(nr),0, int(0))
 
 def slomo(ID, curr_pos, target):
@@ -119,40 +119,30 @@ def slomo(ID, curr_pos, target):
 
 def release_oat(side = ''):
     if (side == R)| (side==''):
-	brush_R.move_brush()
 	move_mot(ID_oat_R, oat_open_R)
+	brush_R.move_brush()
 	move_mot(ID_oat_R, oat_close_R)
     	print("release oat on right side from close: "+ str(oat_close_R) +" to open:"+ str(oat_open_R))
     	logging.info('release oat on right side ')
     if (side == L) | (side==''):
-	brush_L.move_brush()
 	move_mot(ID_oat_L, oat_open_L)
+	brush_L.move_brush()
 	move_mot(ID_oat_L, oat_close_L)
     	print("release oat on right side from close: "+ str(oat_close_L) +" to open:"+ str(oat_open_L))
     	logging.info('release oat on left side ')
 
 def open_Platforms():
-    print('openplatforms')
-    move_mot(ID_L, feed_L_front)
-    if b_slomo:
-        print('with slomo')
-	slomo(ID_L, feed_L_front, free_L)
-    else:
-        print('without slomo')
-	move_mot(ID_L, free_L)
-    move_mot(ID_R, feed_R_front)
-    if b_slomo:
-	slomo(ID_R, feed_R_front, free_R)	
-    else:
-	move_mot(ID_R, free_R)
+    move_mot(ID_L, open_L)   
+    slomo(ID_L, open_L,free_L)
+    move_mot(ID_R, open_R)
+    slomo(ID_R, feed_R_front, free_R)
 
 def close_Platforms():
+    move_mot(ID_L, closed_L)   
     move_mot(ID_R, closed_R)
-    move_mot(ID_L, closed_L)
 
 print("close both motors")
-move_mot(ID_L, closed_L)
-move_mot(ID_R, closed_R)
+close_Platforms()
 release_oat(R)
 release_oat(L)
 
@@ -164,7 +154,7 @@ leftSide = False
 open_Platforms()
 
 rat_start_time = 0
-
+lastAction = datetime.datetime.now()
 try:
     rat_eating_time = float(sys.argv[2])
     print("rat eating time: " + str(rat_eating_time)+ " sec")
@@ -176,7 +166,8 @@ try:
     print("program will run for " + str(ex_time)+" min")
 except:
     ex_time = int(config['Params']['ex_time'])
-pullBackTime = int(config['Params']['pullBackTime'])*60
+
+pullBackTime = int(config['Params']['pullBackTime'])
 
 print("program will run for " + str(ex_time)+" min")
 
@@ -185,7 +176,6 @@ R2 = False
 L1 = True
 L2 = False
 open_platform = True
-lastAction = datetime.datetime.now()
 
 def callback_R1(self):
     global R1, R2, lastAction
@@ -198,7 +188,6 @@ def callback_R1(self):
 def callback_R2(self):
     global sideJustPulled, rightSide, leftSide, R1, R2, open_platform, lastAction
     lastAction = datetime.datetime.now()
-
     if not(sideJustPulled) and not(leftSide):
 	move_mot(ID_L, closed_L)
 	sideJustPulled = True
@@ -283,27 +272,17 @@ def rat_eats():
 	update_rat_start_time = True
 	
 lastPrint = datetime.datetime.now()
+
 def smloop():
-    global lastPrint,diff, ratAte, leftSide, rightSide, sideJustPulled, pull_back_timer, open_platform, lastAction
-    if (datetime.datetime.now()- lastAction).total_seconds() > pullBackTime:
+    global lastPrint,diff, ratAte, feedingSide, leftSide, rightSide, sideJustPulled, pull_back_timer
+    if ((datetime.datetime.now()-lastAction).total_seconds() > pullBackTime):
 	close_Platforms()
 	open_Platforms()
-    # print("hey ")
-    # lastPrint = datetime.datetime.now()
-    # static variable with writer
-    # write function to write 
-    # write row only at some time
-    # append et apres ecris par ligne et le faire
-    
-    currentTime  = datetime.datetime.now()
-    diff = currentTime - lastPrint
-    lastPrint = currentTime
-    # print(diff.total_seconds())
-    
-    # if ((datetime.datetime.now()-lastPrint).total_seconds() > 3):
-	# lastPrint = datetime.datetime.now()
-    print('l')
-    # print("side just pulled: "+str(sideJustPulled)+", left side: " + str(leftSide) + ", right side: "+ str(rightSide) + ", rat ate: "+ str(ratAte))
+	
+    if ((datetime.datetime.now()-lastPrint).total_seconds() > 10):
+		logging.info('scribt is running')
+		lastPrint = datetime.datetime.now()
+    print("side just pulled: "+str(sideJustPulled)+", left side: " + str(leftSide) + ", right side: "+ str(rightSide) + ", rat ate: "+ str(ratAte))
     if sideJustPulled:
 	if not(ratAte):
 	    if rightSide:
@@ -383,6 +362,8 @@ for i in timestamp_pulls_R:
     logging.info(i)
 print('PROGAM END')
 logging.info('*********** PROGRAM END **********')
-copyfile(log_path_temp+filename_temp, dest_log_path)
-os.remove(log_path_temp+filename_temp)
-
+try:
+    copyfile(log_path_temp+filename_temp, dest_log_path)
+    os.remove(log_path_temp+filename_temp)
+except:
+    print("could not move logfile to mnt folder")
