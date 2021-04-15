@@ -97,17 +97,9 @@ oat_close_L = int(config['MOTORPOS']['oat_close_L'])
 oat_close_R  = int(config['MOTORPOS']['oat_close_R'])
 free_L = int(config['MOTORPOS']['free_L'])
 free_R = int(config['MOTORPOS']['free_R'])
-u_slomo = (config['Params']['slomo'])
+b_slomo = bool(config['Params']['slomo'])
 t_move = float(config['Params']['t_move'])
 
-if u_slomo == 'f':
-    b_slomo = False
-else:
-    b_slomo = True
-
-print('slomo')
-print(b_slomo)
-print(b_slomo==False)
 
 #### MOTOR FUNCTIONS ####
 
@@ -122,9 +114,11 @@ def slomo(ID, curr_pos, target):
 	diff = target-curr_pos
 	deltad = diff/40.0
 	for i in range(0,41):
-	    if (open_platform):
-		pwm.set_pwm(int(ID),0, int(int(curr_pos)+i*float(deltad)))
-		time.sleep(0.01)
+		if open_platform:
+			pwm.set_pwm(int(ID),0, int(int(curr_pos)+i*float(deltad)))
+			time.sleep(0.005)
+		else:
+			break
 	pwm.set_pwm(int(ID),0, int(0))
 	logging.info("move motor " + str(ID)+ " in slomo from:" +str(curr_pos) +"to : "+ str(target))
 
@@ -285,7 +279,7 @@ def rat_eats():
 lastPrint = datetime.datetime.now()
 
 def smloop():
-    global lastPrint,diff, ratAte, feedingSide, leftSide, rightSide, sideJustPulled, pull_back_timer
+    global lastPrint,diff, ratAte, feedingSide, leftSide, rightSide, sideJustPulled, pull_back_timer, open_platform
     # print("hey ")
     # lastPrint = datetime.datetime.now()
     # static variable with writer
