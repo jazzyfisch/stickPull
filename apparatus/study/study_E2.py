@@ -18,7 +18,7 @@ filename_temp =  datetime.datetime.now().strftime("%m.%d.%Y_%H:%M:%S") + '_Enclo
 log_path_temp = '/home/pi/Documents/stickPull/apparatus/study/logfiles/'
 dest_log_path = '/mnt/piwebcam/Log files stick pulling/Enclosure'+Enclosure_nr+'/study/' + filename_temp
 
-logging.basicConfig(filename = log_path_temp+filename_temp,format='%(asctime)s %(message)s', level = logging.INFO)
+logging.basicConfig(filename = log_path_temp+filename_temp,format=str(Enclosure_nr)+'%(asctime)s %(message)s', level = logging.INFO)
 
 logging.info('*********** PROGRAM START **********')
 
@@ -176,7 +176,7 @@ try:
     print("program will run for " + str(ex_time)+" min")
 except:
     ex_time = int(config['Params']['ex_time'])
-pullBackTime = int(config['Params']['pullBackTime'])*60
+pullBackTime = int(config['Params']['pullBackTime'])
 
 print("program will run for " + str(ex_time)+" min")
 
@@ -385,4 +385,3 @@ print('PROGAM END')
 logging.info('*********** PROGRAM END **********')
 copyfile(log_path_temp+filename_temp, dest_log_path)
 os.remove(log_path_temp+filename_temp)
-
