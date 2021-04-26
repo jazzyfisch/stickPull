@@ -133,20 +133,32 @@ def release_oat(side = ''):
     	print("release oat on right side from close: "+ str(oat_close_L) +" to open:"+ str(oat_open_L))
     	logging.info('release oat on left side ')
 
-def open_Platforms():
+def open_Platforms_side(side):
     print('openplatforms')
-    move_mot(ID_L, feed_L_front)
-    if b_slomo:
-        print('with slomo')
-	slomo(ID_L, feed_L_front, free_L)
+    if (side=='L'):
+	move_mot(ID_L, feed_L_front)
+	if b_slomo:
+	    print('with slomo')
+	    slomo(ID_L, feed_L_front, free_L)
+	else:
+	    print('without slomo')
+	    move_mot(ID_L, free_L)
+    if side=='R':
+	move_mot(ID_R, feed_R_front)
+	if b_slomo:
+	    slomo(ID_R, feed_R_front, free_R)	
+	else:
+	    move_mot(ID_R, free_R)
+
+def open_Platforms():
+    if pulls_in_a_row%2 ==0:
+	open_Platforms_side('R')
+	open_Platforms_side('L')
     else:
-        print('without slomo')
-	move_mot(ID_L, free_L)
-    move_mot(ID_R, feed_R_front)
-    if b_slomo:
-	slomo(ID_R, feed_R_front, free_R)	
-    else:
-	move_mot(ID_R, free_R)
+	if lastSide =='R':
+	    open_Platforms_side('L')
+	else:
+	    open_Platforms_side('R')
 
 def close_Platforms():
     move_mot(ID_R, closed_R)
@@ -188,6 +200,8 @@ L1 = True
 L2 = False
 open_platform = True
 lastAction = datetime.datetime.now()
+pulls_in_a_row = 0
+lastSide = 'B'
 
 def callback_R1(self):
     global R1, R2, lastAction
@@ -198,9 +212,9 @@ def callback_R1(self):
     R2 = False
 
 def callback_R2(self):
-    global sideJustPulled, rightSide, leftSide, R1, R2, open_platform, lastAction
+    global sideJustPulled, rightSide, leftSide, R1, R2, open_platform, lastAction, pulls_in_a_row, lastSide
     lastAction = datetime.datetime.now()
-
+    pulls_in_a_row = pulls_in_a_row + 1
     if not(sideJustPulled) and not(leftSide):
 	move_mot(ID_L, closed_L)
 	sideJustPulled = True
@@ -215,6 +229,7 @@ def callback_R2(self):
     R1 = False
     R2 = True
     print("R2 was pressed")
+    lastSide = 'R'
 
 def callback_L1(self):
     global L1, L2, lastAction
@@ -225,8 +240,9 @@ def callback_L1(self):
     L2 = False
 
 def callback_L2(self):
-    global sideJustPulled, rightSide, leftSide, L1, L2, open_platform, lastAction
+    global sideJustPulled, rightSide, leftSide, L1, L2, open_platform, lastAction, pulls_in_a_row, lastSide
     lastAction = datetime.datetime.now()
+    pulls_in_a_row = pulls_in_a_row + 1
     if not(sideJustPulled) and not(rightSide):
 	move_mot(ID_R, closed_R)
 	sideJustPulled = True
@@ -240,6 +256,7 @@ def callback_L2(self):
     L2 = True
     logging.info('L2 was pressed ')
     print("L2 was pressed")
+    lastSide = 'L'
 
 button_R2 = int(config['PIN_BUTTON']['R2']) # config.buttons["button_R1"] L2
 button_R1 = int(config['PIN_BUTTON']['R1'])
