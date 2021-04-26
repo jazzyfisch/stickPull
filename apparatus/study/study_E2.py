@@ -121,15 +121,15 @@ def slomo(ID, curr_pos, target):
 
 def release_oat(side = ''):
     if (side == R)| (side==''):
-	brush_R.move_brush()
-	move_mot(ID_oat_R, oat_open_R)
+        move_mot(ID_oat_R, oat_open_R)
+        brush_R.move_brush()
 	move_mot(ID_oat_R, oat_close_R)
     	print("release oat on right side from close: "+ str(oat_close_R) +" to open:"+ str(oat_open_R))
     	logging.info('release oat on right side ')
     if (side == L) | (side==''):
-	brush_L.move_brush()
 	move_mot(ID_oat_L, oat_open_L)
-	move_mot(ID_oat_L, oat_close_L)
+        brush_L.move_brush()
+        move_mot(ID_oat_L, oat_close_L)
     	print("release oat on right side from close: "+ str(oat_close_L) +" to open:"+ str(oat_open_L))
     	logging.info('release oat on left side ')
 
