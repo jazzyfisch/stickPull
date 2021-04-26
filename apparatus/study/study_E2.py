@@ -18,7 +18,7 @@ filename_temp =  datetime.datetime.now().strftime("%m.%d.%Y_%H:%M:%S") + '_Enclo
 log_path_temp = '/home/pi/Documents/stickPull/apparatus/study/logfiles/'
 dest_log_path = '/mnt/piwebcam/Log files stick pulling/Enclosure'+Enclosure_nr+'/study/' + filename_temp
 
-logging.basicConfig(filename = log_path_temp+filename_temp,format=str(Enclosure_nr)+'%(asctime)s %(message)s', level = logging.INFO)
+logging.basicConfig(filename = log_path_temp+filename_temp,format=str(Enclosure_nr)+' %(asctime)s %(message)s', level = logging.INFO)
 
 logging.info('*********** PROGRAM START **********')
 
