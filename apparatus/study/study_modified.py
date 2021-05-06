@@ -58,6 +58,7 @@ class Brush:
 
 R = 'R'
 L = 'L'
+lastSide = 'B'
 
 def namestr(obj, namespace):
     return [name for name in namespace if namespace[name] is obj]
@@ -71,6 +72,7 @@ ID_oat_R = int(config['IDMOTOR']['ID_oat_R'])
 ID_oat_L = int(config['IDMOTOR']['ID_oat_L'])
 
 
+
 global R1, R2, L1, L2, open_platform, sideJustPulled, rightSide, leftSide
 open_platform = True
 rat_start_time = 0
@@ -78,6 +80,8 @@ ratAte = False
 ex_time = 0
 timestamp_pulls_L = []
 timestamp_pulls_R = []
+sideJustPulled_BlockOtherSide = False
+blocktimer = datetime.datetime.now()
 
 closed_L = int(config['MOTORPOS']['closed_L'])
 open_L_free = int(config['MOTORPOS']['free_L'])
@@ -97,6 +101,7 @@ free_L = int(config['MOTORPOS']['free_L'])
 free_R = int(config['MOTORPOS']['free_R'])
 b_slomo = bool(config['Params']['slomo'])
 t_move = float(config['Params']['t_move'])
+timeToBlock = int(config['Params']['timeToBlock'])
 
 #### MOTOR FUNCTIONS ####
 
@@ -151,14 +156,14 @@ def open_Platforms_side(side):
 	    move_mot(ID_R, free_R)
 
 def open_Platforms():
-    if pulls_in_a_row%2 ==0:
-	open_Platforms_side('R')
-	open_Platforms_side('L')
-    else:
+    if sideJustPulled_BlockOtherSide:
 	if lastSide =='R':
 	    open_Platforms_side('L')
 	else:
-	    open_Platforms_side('R')
+	    open_Platforms_side('R')        
+    else:
+	open_Platforms_side('R')
+	open_Platforms_side('L')
 
 def close_Platforms():
     move_mot(ID_R, closed_R)
@@ -200,8 +205,7 @@ L1 = True
 L2 = False
 open_platform = True
 lastAction = datetime.datetime.now()
-pulls_in_a_row = 0
-lastSide = 'B'
+
 
 def callback_R1(self):
     global R1, R2, lastAction
@@ -212,9 +216,11 @@ def callback_R1(self):
     R2 = False
 
 def callback_R2(self):
-    global sideJustPulled, rightSide, leftSide, R1, R2, open_platform, lastAction, pulls_in_a_row, lastSide
+    global sideJustPulled, rightSide, leftSide, R1, R2, open_platform, lastAction, lastSide, sideJustPulled_BlockOtherSide
     lastAction = datetime.datetime.now()
-    pulls_in_a_row = pulls_in_a_row + 1
+    sideJustPulled_BlockOtherSide = not(sideJustPulled_BlockOtherSide)
+    if sideJustPulled_BlockOtherSide:
+        blocktimer = datetime.datetime.now()
     if not(sideJustPulled) and not(leftSide):
 	move_mot(ID_L, closed_L)
 	sideJustPulled = True
@@ -240,9 +246,12 @@ def callback_L1(self):
     L2 = False
 
 def callback_L2(self):
-    global sideJustPulled, rightSide, leftSide, L1, L2, open_platform, lastAction, pulls_in_a_row, lastSide
+    global sideJustPulled, rightSide, leftSide, L1, L2, open_platform, lastAction, lastSide, sideJustPulled_BlockOtherSide
     lastAction = datetime.datetime.now()
-    pulls_in_a_row = pulls_in_a_row + 1
+    sideJustPulled_BlockOtherSide = not(sideJustPulled_BlockOtherSide)
+    if sideJustPulled_BlockOtherSide:
+        blocktimer = datetime.datetime.now()
+
     if not(sideJustPulled) and not(rightSide):
 	move_mot(ID_R, closed_R)
 	sideJustPulled = True
@@ -293,16 +302,21 @@ def rat_eats():
 	print(rat_eating_time)
 	if ((datetime.datetime.now()- rat_start_time).total_seconds() > (rat_eating_time)):
 	    print("rat ate")
-	    logging.info('rat ate')
+	    logging.info('rat ate')s
 	    ratAte = True
 	    update_rat_start_time = False
     else:
 	# print("rat eating time is updatet")
 	rat_start_time = datetime.datetime.now()
-	update_rat_start_time = True
-	
+	update_rat_start_time = True	
 lastPrint = datetime.datetime.now()
+
 def smloop():
+    global sideJustPulled_BlockOtherSide
+    if sideJustPulled_BlockOtherSide:
+        if (datetime.datetime.now() - blocktimer).total_seconds() > timeToBlock:
+            f = False
+            open_Platforms()            
     global lastPrint,diff, ratAte, leftSide, rightSide, sideJustPulled, pull_back_timer, open_platform, lastAction
     if (datetime.datetime.now()- lastAction).total_seconds() > pullBackTime:
 	close_Platforms()
