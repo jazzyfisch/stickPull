@@ -1,47 +1,54 @@
 [ENCLOSURE]
 ID = 4
 
+[Params]
+slomo = True
+ex_time = 960
+t_move = 0.5
+rat_eating_time = 10
+pullBackTime = 900
+timeToBlock = 180
+
 [PIN_BUTTON]
-L1 = 12
+R2 = 12
 L2 = 20
 R1 = 21
-R2 = 16
+L1 = 16
 
 [IDMOTOR]
-ID_L = 13
-ID_R = 15
-ID_oat_R = 12
-ID_oat_L = 14
+ID_L = 15
+ID_R = 14
+ID_oat_R = 13
+ID_oat_L = 12
 
 [PIN_BRUSH]
-DIR_R = 25
-PUL_R = 24 
-ENA_R = 23
-DIR_L = 5
-PUL_L = 6
-ENA_L = 13
-
-
-[MOTORPOS]
-closed_L = 420
-open_L = 300
-feed_L_back = 420
-feed_L_front = 300
-free_L = 250
-
-closed_R = 120 
-open_R = 230
-feed_R_back = 120
-feed_R_front = 210
-free_R = 250
-
-oat_close_R = 450
-oat_open_R = 300
-
-oat_open_L = 300
-oat_close_L = 440
+DIR_R = 24
+PUL_R = 23 
+ENA_R = 25
+DIR_L = 6
+PUL_L = 13
+ENA_L = 5
 
 [BRUSH]
-st_dl =  0.000005
-range_br = 1530
+st_dl = 0.00005
+range_br = 3060
+
+[MOTORPOS]
+closed_L = 350
+open_L = 230
+feed_L_back = 260
+feed_L_front = 230
+free_L = 180
+
+closed_R =  180
+open_R = 320
+feed_R_back = 180 
+feed_R_front = 320
+free_R = 360
+
+oat_close_R = 450
+oat_open_R = 250
+
+oat_open_L = 260
+oat_close_L = 400
 
