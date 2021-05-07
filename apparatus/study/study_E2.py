@@ -365,9 +365,10 @@ while (datetime.datetime.now()- prg_start_time).total_seconds()< (ex_time*60):
 
 move_mot(ID_R, closed_R)
 move_mot(ID_L, closed_L)
-while GPIO.input(button_R1) and GPIO.input(button_L1):
-    move_mot(ID_R, closed_R)
-    move_mot(ID_L, closed_L)
+move_mot(ID_R, closed_R)
+move_mot(ID_L, closed_L)
+move_mot(ID_R, closed_R)
+move_mot(ID_L, closed_L)
 
 GPIO.cleanup()
 

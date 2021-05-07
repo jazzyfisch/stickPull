@@ -27,7 +27,6 @@ pwm.set_pwm_freq(50)
 
 ##### SETUP PINS #####
 GPIO.setmode(GPIO.BCM)
-
 class Brush:
     def __init__(self, ENA, PUL, DIR, side, st_dl, range_br):
 	self.ENA = ENA
@@ -218,7 +217,7 @@ def callback_R1(self):
 def callback_R2(self):
     global sideJustPulled, rightSide, leftSide, R1, R2, open_platform, lastAction, lastSide, sideJustPulled_BlockOtherSide
     lastAction = datetime.datetime.now()
-    sideJustPulled_BlockOtherSide = not(sideJustPulled_BlockOtherSide)
+    sideJustPulled_BlockOtherSide = True
     if sideJustPulled_BlockOtherSide:
         blocktimer = datetime.datetime.now()
     if not(sideJustPulled) and not(leftSide):
@@ -248,7 +247,7 @@ def callback_L1(self):
 def callback_L2(self):
     global sideJustPulled, rightSide, leftSide, L1, L2, open_platform, lastAction, lastSide, sideJustPulled_BlockOtherSide
     lastAction = datetime.datetime.now()
-    sideJustPulled_BlockOtherSide = not(sideJustPulled_BlockOtherSide)
+    sideJustPulled_BlockOtherSide = True
     if sideJustPulled_BlockOtherSide:
         blocktimer = datetime.datetime.now()
 
@@ -302,7 +301,7 @@ def rat_eats():
 	print(rat_eating_time)
 	if ((datetime.datetime.now()- rat_start_time).total_seconds() > (rat_eating_time)):
 	    print("rat ate")
-	    logging.info('rat ate')s
+	    logging.info('rat ate')
 	    ratAte = True
 	    update_rat_start_time = False
     else:
@@ -315,7 +314,7 @@ def smloop():
     global sideJustPulled_BlockOtherSide
     if sideJustPulled_BlockOtherSide:
         if (datetime.datetime.now() - blocktimer).total_seconds() > timeToBlock:
-            f = False
+            sideJustPulled_BlockOtherSide = False
             open_Platforms()            
     global lastPrint,diff, ratAte, leftSide, rightSide, sideJustPulled, pull_back_timer, open_platform, lastAction
     if (datetime.datetime.now()- lastAction).total_seconds() > pullBackTime:
@@ -396,9 +395,11 @@ while (datetime.datetime.now()- prg_start_time).total_seconds()< (ex_time*60):
 
 move_mot(ID_R, closed_R)
 move_mot(ID_L, closed_L)
-while GPIO.input(button_R1) and GPIO.input(button_L1):
-    move_mot(ID_R, closed_R)
-    move_mot(ID_L, closed_L)
+move_mot(ID_R, closed_R)
+move_mot(ID_L, closed_L)
+move_mot(ID_R, closed_R)
+move_mot(ID_L, closed_L)
+
 
 GPIO.cleanup()
 
